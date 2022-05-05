@@ -1,28 +1,44 @@
-import { Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
-
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { Movie } from './entities/movie.entity';
+import { MoviesService } from './movies.service';
 @Controller('movies')
 export class MoviesController {
+  constructor(private readonly moviesService: MoviesService) {}
+
   @Get()
-  getAll() {
-    return 'This will return all movies';
+  getAll(): Movie[] {
+    return this.moviesService.getAll();
   }
 
-  @Get('/:id')
-  getOne(@Param('id') id: string) {
-    return `this will return one movie id : ${id}`;
+  /**
+   * Get에서 :id가 맨위에 있으면 밑에있는 get들이 동작안한다 그러므로 밑으로 내려줘야한다.
+   */
+
+  @Get(':id')
+  getOne(@Param('id') movieId: string): Movie {
+    return this.moviesService.getOne(movieId);
   }
 
   @Post()
-  create() {
-    return 'this will create a movie';
+  create(@Body() movieData) {
+    return this.moviesService.create(movieData);
   }
 
-  @Delete('/:id')
+  @Delete(':id')
   remove(@Param('id') movieId: string) {
-    return `this will delete a movie id : ${movieId}`;
+    return this.moviesService.deleteOne(movieId);
   }
 
-  @Patch('/:id')
+  @Patch(':id')
   patch(@Param('id') movieId: string) {
     return `this will update a movie id : ${movieId}`;
   }
